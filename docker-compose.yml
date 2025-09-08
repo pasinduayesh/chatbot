@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+
+  chatbot:
+    build: .
+    container_name: chatbot
+    depends_on:
+      - ollama
+    ports:
+      - "5000:5000"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./static:/usr/share/nginx/html/static
+    ports:
+      - "80:80"
+    depends_on:
+      - chatbot
+
+volumes:
+  ollama_data:

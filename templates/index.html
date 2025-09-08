@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="AI Chatbot powered by Ollama - LLaMA2 & Mistral">
+  <meta name="keywords" content="AI Chatbot, Ollama, LLaMA2, Mistral, Flask, Nginx">
+  <meta name="author" content="Your Name">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chatbot</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 AI Chatbot</h1>
+
+    <label for="model">Choose Model:</label>
+    <select id="model">
+      <option value="llama2">LLaMA2</option>
+      <option value="mistral">Mistral</option>
+    </select>
+
+    <div id="chat-box"></div>
+
+    <input type="text" id="user-input" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const chatBox = document.getElementById("chat-box");
+      const model = document.getElementById("model").value;
+
+      const userMsg = input.value;
+      if (!userMsg) return;
+
+      chatBox.innerHTML += `<p><b>You:</b> ${userMsg}</p>`;
+      input.value = "";
+
+      const response = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMsg, model })
+      });
+
+      const data = await response.json();
+      chatBox.innerHTML += `<p><b>Bot:</b> ${data.reply || "Error"}</p>`;
+    }
+  </script>
+</body>
+</html>
+
